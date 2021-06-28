@@ -67,7 +67,7 @@ public class PremierLeagueDAO {
 				+ "FROM players p, actions a "
 				+ "WHERE p.PlayerID = a.PlayerID "
 				+ "GROUP BY p.PlayerID, p.Name "
-				+ "HAVING AVG(a.Goals)>?";
+				+ "HAVING AVG(a.Goals)>=?";
 		
 		Connection conn = DBConnect.getConnection();
 
@@ -93,8 +93,9 @@ public class PremierLeagueDAO {
 	public List<Adiacenza> getArchi(Map<Integer, Player> idMap) {
 		String sql = "SELECT p1.PlayerID AS g1, p2.PlayerID AS g2, (SUM(a1.TimePlayed)-SUM(a2.TimePlayed)) AS differenza "
 				+ "FROM players p1, players p2, actions a1, actions a2 "
-				+ "WHERE p1.PlayerID = a1.PlayerID AND p2.PlayerID = a2.PlayerID AND a1.`Starts` = 1 AND a2.`Starts` = 1 AND a1.MatchID = a2.MatchID AND a1.TeamID != a2.TeamID AND p1.PlayerID > p2.PlayerID "
-				+ "GROUP BY p1.playerID, p2.playerID";
+				+ "WHERE p1.PlayerID = a1.PlayerID AND p2.PlayerID = a2.PlayerID AND a1.MatchID = a2.MatchID AND a1.TeamID != a2.TeamID AND p1.PlayerID > p2.PlayerID "
+				+ "GROUP BY p1.playerID, p2.playerID "
+				+ "HAVING COUNT( a1.`Starts`=1)>0 AND COUNT(a2.`Starts`=1)>0";
 		List<Adiacenza> result = new ArrayList<Adiacenza>();
 		Connection conn = DBConnect.getConnection();
 
