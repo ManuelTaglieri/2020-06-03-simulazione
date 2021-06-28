@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Sfidante;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -44,7 +45,22 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	
+    	txtResult.clear();
+    	try {
+    		double goal = Double.parseDouble(txtGoals.getText());
+    		this.model.creaGrafo(goal);
+    		txtResult.appendText("Grafo creato!\n");
+    		txtResult.appendText("# Vertici: "+this.model.getNumVertici()+"\n");
+    		txtResult.appendText("# Archi: "+this.model.getNumArchi()+"\n");
+    		btnTopPlayer.setDisable(false);
+    		btnDreamTeam.setDisable(false);
+    	} catch(NumberFormatException e) {
+    		txtResult.setText("Inserire un valore numerico come soglia del goal");
+    	} catch(NullPointerException e) {
+    		txtResult.setText("Inserire un valore come soglia del goal");
+    	}
+    	
     }
 
     @FXML
@@ -54,6 +70,13 @@ public class FXMLController {
 
     @FXML
     void doTopPlayer(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	txtResult.appendText("Giocatore migliore: "+this.model.getMigliore().toString()+"\n");
+    	txtResult.appendText("Lista sfidanti del migliore: \n");
+    	for (Sfidante s : this.model.getSfidanti()) {
+    		txtResult.appendText(s.getP().toString()+" | "+s.getDifferenza()+"\n");
+    	}
 
     }
 
