@@ -5,9 +5,11 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Player;
 import it.polito.tdp.PremierLeague.model.Sfidante;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -65,6 +67,25 @@ public class FXMLController {
 
     @FXML
     void doDreamTeam(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	try {
+    		
+    		int k = Integer.parseInt(txtK.getText());
+    		if (k<1) {
+    			txtResult.appendText("Errore: inserire un valore di k almeno pari ad 1");
+    			return;
+    		}
+    		List<Player> dream = this.model.getDreamTeam(k);
+    		txtResult.appendText("Giocatori nel dream team:\n");
+    		for (Player p : dream) {
+    			txtResult.appendText(p.toString()+"\n");
+    		}
+    		txtResult.appendText("Grado di titolarità del dream team: "+this.model.getMigliorTit());
+    		
+    	} catch(NumberFormatException e) {
+    		txtResult.setText("Inserire un valore di k intero");
+    	}
 
     }
 

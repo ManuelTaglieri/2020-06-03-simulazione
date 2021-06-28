@@ -1,5 +1,6 @@
 package it.polito.tdp.PremierLeague.model;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,6 +19,9 @@ public class Model {
 	private Graph<Player, DefaultWeightedEdge> grafo;
 	private PremierLeagueDAO dao;
 	private Map<Integer, Player> idMap;
+	private Map<Player, Integer> prestazioni;
+	private List<Player> dreamTeam;
+	private int migliorTit;
 	
 	public Model() {
 		this.dao = new PremierLeagueDAO();
@@ -68,5 +72,55 @@ public class Model {
 		Collections.sort(sfidanti);
 		return sfidanti;
 	}
+	
+	public List<Player> getDreamTeam(int k) {
+		
+		this.prestazioni = new HashMap<>();
+		for (Player p : idMap.values()) {
+			int uscenti = 0;
+			for (DefaultWeightedEdge e : this.grafo.outgoingEdgesOf(p)) {
+				uscenti += this.grafo.getEdgeWeight(e);
+			}
+			int entranti = 0;
+			for (DefaultWeightedEdge e : this.grafo.incomingEdgesOf(p)) {
+				entranti += this.grafo.getEdgeWeight(e);
+			}
+			int titolarita = uscenti - entranti;
+			this.prestazioni.put(p, titolarita);
+		}
+		this.migliorTit = 0;
+		ricorsiva(k, idMap.values(), new LinkedList<Player>(), 0);
+		return this.dreamTeam;
+		
+	}
+
+	private void ricorsiva(int k, Collection<Player> giocatori, List<Player> team, int forza) {
+		
+		if(team.size()==k) {
+			if (forza>this.migliorTit) {
+				this.dreamTeam = new LinkedList<>(team);
+				this.migliorTit = forza;
+			}
+		} else {
+			for (Player p : giocatori) {
+				boolean ok = true;
+				for (Player corrente : team) {
+					if (Graphs.neighborSetOf(grafo, corrente).contains(p)) {
+						ok = false;
+					}
+				}
+				if (!team.contains(p) && ok) {
+					team.add(p);
+					ricorsiva(k, giocatori, team, forza + this.prestazioni.get(p));
+					team.remove(p);
+				}
+			}
+		}
+	}
+
+	public int getMigliorTit() {
+		return migliorTit;
+	}
+	
 
 }
